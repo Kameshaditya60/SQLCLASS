@@ -46,6 +46,7 @@ app.set("views", path.join(__dirname, "/views"));
 app.use(methodOverride("_method"));
 app.use(express.urlencoded({ extended: true }));
 
+//home page
 app.get("/", (req, res) => {
 
   let q = ' SELECT count(*) FROM user';
@@ -63,7 +64,7 @@ app.get("/", (req, res) => {
 
 
 });
-
+// user page 
 app.get("/user", (req, res) => {
   let q = "SELECT * FROM user";
   try {
@@ -111,91 +112,115 @@ app.post("/user/adduser", (req, res) => {
 
 
 });
-//DELETE user 
+// DELETE user
 app.get("/user/:id/delete", (req, res) => {
   let { id } = req.params;
   console.log(id);
-  let q = `SELECT * FROM user WHERE id = ?`;
-  try {
-    connection.query(q, [id], (err, result) => {
-      if (err) throw err;
-      console.log(result, "result yha ");
-      let user = result[0];
-      console.log(user);
-      res.render("deleteuser.ejs", { user });
-
-    });
-  } catch (err) {
-    console.log(err);
-    res.send("kuch to gadabad hai daya ")
-  };
-
-});
-
-// edit respose 
-app.get("/user/:id/edit", (req, res) => {
-  let { id } = req.params;
   let q = `SELECT * FROM user WHERE id = '${id}'`;
+
   try {
     connection.query(q, (err, result) => {
       if (err) throw err;
       console.log(result);
-      let user = result[0];
-      res.render("edituser.ejs", { user });
-    });
-  } catch (err) {
-    console.log(err);
-    res.send("NOT FOUND USer PAGE");
-  };
-
-
-});
-
-
-//update (db) route
-app.patch("/user/:id", (req, res) => {
-  console.log("hi");
-  let { id } = req.params;
-
-  let { password: formPass, username: newUsername } = req.body;// yha se user input kiya form me wo data nikal rahe
-  let q = `SELECT * FROM user WHERE id = '${id}'`;
-  try {
-    connection.query(q, (err, result) => {
-      if (err) throw err;
-      console.log(result, "hello");
-      let user = result[0];
-      if (formPass != user.password) {
-        console.log("hello");
-        res.send("You enter wrong password");
+      if (result.length === 0) {
+        console.log("No user found with given id");
+        res.send("No user found");
       } else {
-        let q2 = `UPDATE user SET username='${newUsername}' WHERE id = '${id}'`;
-        connection.query(q2, (err, result) => {
-          console.log(result);
-          if (err) throw err;
-          res.send("Update Successfully");
-          // res.redirect("/user");
-
-        });
-
+        let user = result[0];
+        console.log(user);
+        res.render("deleteuser.ejs", { user });
       }
     });
   } catch (err) {
     console.log(err);
-    res.send("Some error in DataBase");
+    res.send("Some error in Database ");
   };
-
-})
-
-
-
-
-let port = 3000
-app.listen(port, () => {
-  console.log(`Server is started, listieng port number ${port}`);
 });
 
+//delete user from db by authentication
+app.delete("/user/:id", (req, res) => {
+  console.log("delete user")
+  let { id } = req.params;
+  let { email: confirmEmail, password: confirmPassword } = req.body;
+  let q = `SELECT * FROM user WHERE id = '${id}'`;
+  try {
+    connection.query(q, (err, res) => {
+      if (err) throw err;
+      console.log("delete user2");
+      let user = result[0];
+      if (confirmEmail != user.email && confirmPassword != user.password) {
+        res.send("you entered wrong password and email is incorrect");
+      } else {
+        let q2 = `DELETE FROM user WHERE id=${user}`;
+        res.send("delete successfully");
+      }
+    }
+    );
+
+  } catch (err) {
+    console.log(err);
+    res.send("Some thing happened");
+  }
+  });
+    // edit respose 
+    app.get("/user/:id/edit", (req, res) => {
+      let { id } = req.params;
+      console.log(id);
+      let q = `SELECT * FROM user WHERE id = '${id}'`;
+      try {
+        connection.query(q, (err, result) => {
+          if (err) throw err;
+          console.log(result);
+          let user = result[0];
+          res.render("edituser.ejs", { user });
+        });
+      } catch (err) {
+        console.log(err);
+        res.send("NOT FOUND USer PAGE");
+      };
+
+
+    });
+
+
+    //update (db) route
+    app.patch("/user/:id", (req, res) => {
+      console.log("hi");
+      let { id } = req.params;
+
+      let { password: formPass, username: newUsername } = req.body;// yha se user input kiya form me wo data nikal rahe
+      let q = `SELECT * FROM user WHERE id = '${id}'`;
+      try {
+        connection.query(q, (err, result) => {
+          if (err) throw err;
+          console.log(result, "hello");
+          let user = result[0];
+          if (formPass != user.password) {
+            console.log("hello");
+            res.send("You enter wrong password");
+          } else {
+            let q2 = `UPDATE user SET username='${newUsername}' WHERE id = '${id}'`;
+            connection.query(q2, (err, result) => {
+              console.log(result);
+              if (err) throw err;
+              res.send("Update Successfully");
+              // res.redirect("/user");
+
+            });
+
+          }
+        });
+      } catch (err) {
+        console.log(err);
+        res.send("Some error in DataBase");
+      };
+
+    })
 
 
 
 
-
+    let port = 3000
+    app.listen(port, () => {
+      console.log(`Server is started, listieng port number ${port}`);
+    });
