@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USER INFORMATION</title>
+    <style>
+        table,
+        tr,
+        th {
+            border: 1px solid black;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        #newwuserr {
+            height: 200px;
+            width: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+        .newuser {
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th>ID </th>
+            <th>USERNAME</th>
+            <th>E-MAIL</th>
+            <th>edit user</th>
+            <th>delete user</th>
+        </tr>
+        <%for (user of users) { %>
+            <tr>
+                <td>
+                    <%=user.id%>
+                </td>
+                <td>
+                    <%=user.username%>
+                </td>
+                <td>
+                    <%=user.email%>
+                </td>
+                <td>
+                    <form method="GET" action="/user/<%=user.id%>/edit">
+                        <button>edit</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="GET" action="/user/:<%=user.id%>/delete"><button>delete</button></form>
+                </td>
+
+            </tr>
+            <%}%>
+    </table>
+
+    <div id="newwuserr">
+        <form method="GET" action="/user/add">
+            <button class="newuser">Add new User</button>
+        </form>
+
+    </div>
+</body>
+
+</html>

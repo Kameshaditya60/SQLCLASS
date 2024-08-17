@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDit User</title>
+</head>
+
+<body>
+    <h2> Edit YOU PRofile : <%= user.email%>
+    </h2>
+    <form method="post" action="/user/<%=user.id%>?_method=PATCH">
+        <textarea name="username" id=""><%=user.username%></textarea>
+        <textarea type="password" name="password" id="" placeholder="enter password"></textarea>
+        <button>save</button>
+    </form>
+
+</body>
+
+</html>
